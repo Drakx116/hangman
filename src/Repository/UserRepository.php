@@ -41,12 +41,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * @param $entity
      * @throws ORMException
      */
-    public function persist($entity): void
+    public function persist(User $user): void
     {
-        $this->_em->persist($entity);
+        $this->_em->persist($user);
     }
 
     /**
