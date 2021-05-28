@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=GameRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Game
 {
@@ -42,9 +43,14 @@ class Game
         return $this->token;
     }
 
-    public function setToken(string $token): self
+    /**
+     * @ORM\PrePersist()
+     */
+    public function setToken(): self
     {
-        $this->token = $token;
+        $unique = str_shuffle(uniqid('', true));
+        $hash = str_replace('.', '', $unique);
+        $this->token = strtoupper(substr($hash, 0, 16));
 
         return $this;
     }
