@@ -21,12 +21,12 @@ class GameController extends AbstractController
     }
 
     /**
-     * @Route("/game/{id}", name="app_game_show")
+     * @Route("/game/{id}", name="app_game_show", requirements={"game"="\d+"})
      */
-    public function show(int $id): Response
+    public function show(Game $game): Response
     {
         return $this->render('game/show.html.twig', [
-            'game' => $id
+            'game' => $game
         ]);
     }
 }
