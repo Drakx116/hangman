@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Repository\GameRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +22,8 @@ class GameController extends AbstractController
     }
 
     /**
-     * @Route("/game/{id}", name="app_game_show", requirements={"game"="\d+"})
+     * @Route("/game/{token}", name="app_game_show")
+     * @ParamConverter("game_token_converter")
      */
     public function show(Game $game): Response
     {
