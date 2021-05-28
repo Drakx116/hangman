@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -16,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends BaseRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -34,8 +35,26 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         }
 
         $user->setPassword($newEncodedPassword);
-        
+
         $this->persist($user);
         $this->flush();
+    }
+
+    /**
+     * @param $entity
+     * @throws ORMException
+     */
+    public function persist($entity): void
+    {
+        $this->_em->persist($entity);
+    }
+
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function flush(): void
+    {
+        $this->_em->flush();
     }
 }
