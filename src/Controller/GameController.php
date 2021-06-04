@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
-use App\Entity\UserGame;
+use App\Entity\User;
 use App\Repository\GameRepository;
 use App\Repository\UserGameRepository;
 use Doctrine\ORM\ORMException;
@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AlphabetType;
+use Symfony\Component\Security\Core\Security;
 
 class GameController extends AbstractController
 {
@@ -23,6 +24,19 @@ class GameController extends AbstractController
     {
         return $this->render('game/index.html.twig', [
             'games' => $repository->findAll()
+        ]);
+    }
+
+    /**
+     * @Route("/game/history", name="app_game_history")
+     */
+    public function history(GameRepository $gameRepository, Security $security): Response
+    {
+        /** @var User $user */ $user = $security->getUser();
+
+        return $this->render('game/history.html.twig', [
+            'games' => $gameRepository->findUserGames($user),
+            'user' => $user
         ]);
     }
 

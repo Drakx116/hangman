@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -36,5 +37,15 @@ class GameRepository extends ServiceEntityRepository
     public function flush(): void
     {
         $this->_em->flush();
+    }
+
+    public function findUserGames(User $user)
+    {
+        return $this->createQueryBuilder('game')
+            ->leftJoin('game.userGames', 'user_games')
+            ->andWhere('user_games.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute();
     }
 }
