@@ -1,8 +1,18 @@
+{% import 'game/macros/_alphabet.html.twig' as alphabet %}
+{% import 'game/macros/_word_to_discover.html.twig' as word %}
+
 {% extends 'base.html.twig' %}
 
 {% block title %} Hangman - Game {{ game.id }} {% endblock %}
 
 {% block body %}
+    <h1> Game {{ game.token }}</h1>
 
+    <div id="game">
+        <span id="attempts"> {{ game.attempts }} </span>
+        <br>
+        {{ word.show(game.secret) }}
+        {{ alphabet.generate() }}
+    </div>
 {% endblock %}
 

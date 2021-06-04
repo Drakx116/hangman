@@ -4,7 +4,7 @@
 
 {% block body %}
     <h2> Games </h2>
-    
+
     {% for game in games %}
         <a href="{{ path('app_game_show', { 'token': game.token }) }}"> Game {{ game.token }} </a>
     {% endfor %}

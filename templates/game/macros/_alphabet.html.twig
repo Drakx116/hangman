@@ -1,0 +1,5 @@
+{% macro generate() %}
+    {% for letter in range('A', 'Z') %}
+        <button class="choice-letter">{{ letter }}</button>
+    {% endfor%}
+{% endmacro %}
