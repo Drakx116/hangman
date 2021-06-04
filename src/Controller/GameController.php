@@ -34,7 +34,10 @@ class GameController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            dd($form->getData());
+            $letter = $form->get('letter')->getData();
+            $response = $this->revealFoundLetter($letter, $userGame->getWord());
+
+            $userGame->setWord($response['secret']);
         }
 
         return $this->render('game/show.html.twig', [
@@ -42,5 +45,30 @@ class GameController extends AbstractController
             'form' => $form->createView(),
             'userGame' => $userGame
         ]);
+    }
+
+    /**
+     * @param string $letter
+     * @param array  $secret
+     * @return array
+     */
+    private function revealFoundLetter(string $letter, array $secret): array
+    {
+        $foundLetters = 0;
+
+        foreach ($secret as $i => $item) {
+            if ($item['letter'] === strtolower($letter)) {
+                $secret[$i]['found'] = true;
+            }
+
+            if ($item['found']) {
+                $foundLetters++;
+            }
+        }
+
+        return [
+            'secret' => $secret,
+            'completed' => $foundLetters === count($secret)
+        ];
     }
 }
