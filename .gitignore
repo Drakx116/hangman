@@ -1,6 +1,7 @@
 ###> global ###
 .idea/
 .vscode/
+.php-cs-fixer.cache
 ###< global ###
 
 ###> symfony/framework-bundle ###

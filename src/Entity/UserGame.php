@@ -90,6 +90,13 @@ class UserGame
         return $this;
     }
 
+    public function decreaseAttempts(): UserGame
+    {
+        --$this->attempts;
+
+        return $this;
+    }
+
     public function getSuccess(): ?bool
     {
         return $this->success;

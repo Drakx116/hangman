@@ -64,7 +64,10 @@ class GameTokenConverter implements ParamConverterInterface
         /** @var User $user */
         $user = $this->security->getUser();
 
-        if (!$userGame = $this->userGameRepository->findOneBy([ 'user' => $user, 'game' => $game, 'success' => null, 'failed' => null ])) {
+        // * Find the pending user game if exists, create a new one otherwise
+        $userGame = $this->userGameRepository->findOnePendingUserGame($user, $game);
+
+        if (!$userGame) {
             $userGame = new UserGame();
             $userGame->setAttempts($game->getAttempts());
             $userGame->setGame($game);

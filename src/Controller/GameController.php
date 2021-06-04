@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\UserGame;
 use App\Repository\GameRepository;
+use App\Repository\UserGameRepository;
+use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,17 +29,41 @@ class GameController extends AbstractController
     /**
      * @Route("/game/{token}", name="app_game_show")
      * @ParamConverter("game_token_converter")
+     * @throws ORMException
      */
-    public function show(Request $request, Game $game, UserGame $userGame): Response
+    public function show(Request $request, Game $game, UserGameRepository $userGameRepository): Response
     {
+        $userGame = $request->attributes->get('user_game');
+
         $form = $this->createForm(AlphabetType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             $letter = $form->get('letter')->getData();
-            $response = $this->revealFoundLetter($letter, $userGame->getWord());
+            [ 'word' => $word, 'validations' => $validations ] = $this->revealFoundLetter($letter, $userGame->getWord());
 
-            $userGame->setWord($response['secret']);
+            // * Decrease attempts if the user's letter is not in the word, update the user game's word otherwise
+            ($validations) ? $userGame->setWord($word) : $userGame->decreaseAttempts();
+
+            $userGameRepository->flush();
+        }
+
+        if ($userGame->getAttempts() < 1) {
+            if ($userGame->getFailed() === null) {
+                $userGame->setSuccess(false);
+                $userGame->setFailed(true);
+                $userGameRepository->flush();
+            }
+
+            return $this->redirectToRoute('app_game_list');
+        }
+
+        if ($this->hasWon($userGame->getWord())) {
+            $userGame->setSuccess(true);
+            $userGame->setFailed(false);
+            $userGameRepository->flush();
+
+            return $this->redirectToRoute('app_game_list');
         }
 
         return $this->render('game/show.html.twig', [
@@ -49,26 +75,36 @@ class GameController extends AbstractController
 
     /**
      * @param string $letter
-     * @param array  $secret
+     * @param array  $word
      * @return array
      */
-    private function revealFoundLetter(string $letter, array $secret): array
+    private function revealFoundLetter(string $letter, array $word): array
+    {
+        $validationCount = 0;
+
+        foreach ($word as $i => $item) {
+            if ($item['letter'] === strtolower($letter)) {
+                $word[$i]['found'] = true;
+                $validationCount++;
+            }
+        }
+
+        return [
+            'word' => $word,
+            'completed' => $this->hasWon($word),
+            'validations' => $validationCount
+        ];
+    }
+
+    private function hasWon(array $word): bool
     {
         $foundLetters = 0;
-
-        foreach ($secret as $i => $item) {
-            if ($item['letter'] === strtolower($letter)) {
-                $secret[$i]['found'] = true;
-            }
-
+        foreach ($word as $item) {
             if ($item['found']) {
                 $foundLetters++;
             }
         }
 
-        return [
-            'secret' => $secret,
-            'completed' => $foundLetters === count($secret)
-        ];
+        return $foundLetters === count($word);
     }
 }
