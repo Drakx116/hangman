@@ -1,5 +1,9 @@
 {% macro show(word) %}
-    {% for letter in word %}
-
+    {% for item in word %}
+        {% if not item.found %}
+            _
+        {% else %}
+            {{ item.letter }}
+        {% endif %}
     {% endfor%}
 {% endmacro %}
