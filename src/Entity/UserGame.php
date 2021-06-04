@@ -34,6 +34,16 @@ class UserGame
      */
     private $attempts;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $success;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $failed;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +81,30 @@ class UserGame
     public function setAttempts(int $attempts): self
     {
         $this->attempts = $attempts;
+
+        return $this;
+    }
+
+    public function getSuccess(): ?bool
+    {
+        return $this->success;
+    }
+
+    public function setSuccess(?bool $success): self
+    {
+        $this->success = $success;
+
+        return $this;
+    }
+
+    public function getFailed(): ?bool
+    {
+        return $this->failed;
+    }
+
+    public function setFailed(bool $failed): self
+    {
+        $this->failed = $failed;
 
         return $this;
     }
