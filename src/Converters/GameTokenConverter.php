@@ -69,6 +69,7 @@ class GameTokenConverter implements ParamConverterInterface
             $userGame->setAttempts($game->getAttempts());
             $userGame->setGame($game);
             $userGame->setUser($user);
+            $userGame->setWord($this->explodeSecret($game->getSecret()));
 
             $this->userGameRepository->persist($userGame);
             $this->userGameRepository->flush();
@@ -87,5 +88,15 @@ class GameTokenConverter implements ParamConverterInterface
     public function supports(ParamConverter $configuration): bool
     {
         return $configuration->getName() === 'game_token_converter';
+    }
+
+    private function explodeSecret(string $secret): array
+    {
+        $word = [];
+        for ($i=0, $max = strlen($secret); $i < $max; $i++) {
+            $word[] = [ 'letter' => $secret[$i], 'found' => false ];
+        }
+
+        return $word;
     }
 }
