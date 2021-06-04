@@ -6,8 +6,10 @@ use App\Entity\Game;
 use App\Repository\GameRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Form\AlphabetType;
 
 class GameController extends AbstractController
 {
@@ -25,10 +27,18 @@ class GameController extends AbstractController
      * @Route("/game/{token}", name="app_game_show")
      * @ParamConverter("game_token_converter")
      */
-    public function show(Game $game): Response
+    public function show(Request $request, Game $game): Response
     {
+        $form = $this->createForm(AlphabetType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            dd($form->getData());
+        }
+
         return $this->render('game/show.html.twig', [
-            'game' => $game
+            'game' => $game,
+            'form' => $form->createView()
         ]);
     }
 }
