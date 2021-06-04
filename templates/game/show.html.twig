@@ -1,4 +1,3 @@
-{#{% import 'game/macros/_alphabet.html.twig' as alphabet %}#}
 {% import 'game/macros/_word_to_discover.html.twig' as word %}
 
 {% extends 'base.html.twig' %}
@@ -9,12 +8,17 @@
     <h1> Game {{ game.token }}</h1>
 
     <div id="game">
-        <span id="attempts"> {{ game.attempts }} </span> attempts left
-        <br>
-        {{ word.show(game.secret) }}
+        <span id="attempts"> {{ userGame.attempts }} </span> attempts left
 
+        <br>
+        {{ word.show(userGame.word) }}
+
+        <br>
+        <br>
+        <hr>
+        <br>
         {{ form_start(form) }}
-            {{ form_widget(form.letter) }}
+            {{ form_widget(form.letter) }} <br>
             {{ form_row(form.submit) }}
         {{ form_end(form)}}
     </div>
