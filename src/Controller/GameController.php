@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\UserGame;
 use App\Repository\GameRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +28,7 @@ class GameController extends AbstractController
      * @Route("/game/{token}", name="app_game_show")
      * @ParamConverter("game_token_converter")
      */
-    public function show(Request $request, Game $game): Response
+    public function show(Request $request, Game $game, UserGame $userGame): Response
     {
         $form = $this->createForm(AlphabetType::class);
         $form->handleRequest($request);
@@ -38,7 +39,8 @@ class GameController extends AbstractController
 
         return $this->render('game/show.html.twig', [
             'game' => $game,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'userGame' => $userGame
         ]);
     }
 }
