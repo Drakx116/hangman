@@ -44,6 +44,11 @@ class UserGame
      */
     private $failed;
 
+    /**
+     * @ORM\Column(type="array")
+     */
+    private $word = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +110,18 @@ class UserGame
     public function setFailed(bool $failed): self
     {
         $this->failed = $failed;
+
+        return $this;
+    }
+
+    public function getWord(): ?array
+    {
+        return $this->word;
+    }
+
+    public function setWord(array $word): self
+    {
+        $this->word = $word;
 
         return $this;
     }
